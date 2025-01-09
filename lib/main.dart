@@ -11,7 +11,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,86 +24,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// class DashboardPage extends StatefulWidget {
-//   @override
-//   _DashboardPageState createState() => _DashboardPageState();
-// }
-
-// class _DashboardPageState extends State<DashboardPage> {
-//   final DatabaseReference _database = FirebaseDatabase.instance.ref();
-//   bool systemActive = false;
-//   double temperature = 0.00;
-//   bool fanState = false;
-//   bool ldr1LEDState = false;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _listenToFirebase();
-//   }
-
-//   void _listenToFirebase(){
-//     _database.child('systemActive').onValue.listen((event){
-//       setState(() {
-//         systemActive = (event.snapshot.value as bool) ?? false;
-//       });
-//     });
-
-//     _database.child('temperature').onValue.listen((event){
-//       setState(() {
-//         temperature = (event.snapshot.value as double) ?? 0.00;
-//       });
-//     });
-
-//     _database.child('fanState').onValue.listen((event){
-//       setState(() {
-//         fanState = (event.snapshot.value as bool) ?? false;
-//       });
-//     });
-
-//     _database.child('ldr1LEDState').onValue.listen((event){
-//       setState(() {
-//         ldr1LEDState = (event.snapshot.value as bool) ?? false;
-//       });
-//     });
-//   }
-
-//    @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: Text('IoT Dashboard')),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.start,
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Text(
-//               'System Status: ${systemActive ? "Active" : "Inactive"}',
-//               style: TextStyle(fontSize: 18),
-//             ),
-//             SizedBox(height: 10),
-//             Text(
-//               'Temperature: ${temperature.toStringAsFixed(1)} °C',
-//               style: TextStyle(fontSize: 18),
-//             ),
-//             SizedBox(height: 10),
-//             Text(
-//               'Fan State: ${fanState ? "ON" : "OFF"}',
-//               style: TextStyle(fontSize: 18),
-//             ),
-//             SizedBox(height: 10),
-//             Text(
-//               'LDR LED State: ${ldr1LEDState ? "ON" : "OFF"}',
-//               style: TextStyle(fontSize: 18),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 class IoTControlScreen extends StatefulWidget {
   @override
   _IoTControlScreenState createState() => _IoTControlScreenState();
@@ -116,11 +35,13 @@ class _IoTControlScreenState extends State<IoTControlScreen> {
   bool systemActive = false;
   bool fanState = false;
   bool ldr1LEDState = false;
+  double temperature = 0.0; // Variable to store temperature
 
   @override
   void initState() {
     super.initState();
     _fetchInitialState();
+    _listenToDatabase(); // Start listening for real-time updates
   }
 
   Future<void> _fetchInitialState() async {
@@ -128,12 +49,22 @@ class _IoTControlScreenState extends State<IoTControlScreen> {
     final systemSnapshot = await _dbRef.child('systemActive').get();
     final fanSnapshot = await _dbRef.child('fanState').get();
     final ldr1LEDSnapshot = await _dbRef.child('ldr1LEDState').get();
+    final temperatureSnapshot = await _dbRef.child('temperature').get(); // Fetch temperature
 
     setState(() {
       mode = (modeSnapshot.value as bool) ?? true;
       systemActive = (systemSnapshot.value as bool) ?? false;
       fanState = (fanSnapshot.value as bool) ?? false;
       ldr1LEDState = (ldr1LEDSnapshot.value as bool) ?? false;
+      temperature = (temperatureSnapshot.value as double) ?? 0.0; // Set temperature
+    });
+  }
+
+  void _listenToDatabase() {
+    _dbRef.child('temperature').onValue.listen((event) {
+      setState(() {
+        temperature = (event.snapshot.value as double) ?? 0.0; // Update temperature in real time
+      });
     });
   }
 
@@ -157,6 +88,11 @@ class _IoTControlScreenState extends State<IoTControlScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            Text(
+              'Temperature: ${temperature.toStringAsFixed(1)} °C', // Display temperature
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
             SwitchListTile(
               title: Text('System: ${systemActive ? "ON" : "OFF"}'),
               value: systemActive,
