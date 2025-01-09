@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "480228385150",
+    "firebase_url": "https://iotcw-274f2-default-rtdb.firebaseio.com",
+    "project_id": "iotcw-274f2",
+    "storage_bucket": "iotcw-274f2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:480228385150:android:159117f0865c35d982932f",
+        "android_client_info": {
+          "package_name": "com.example.smart_home"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTFeZp16UmR_FJ4-aJ6sS__6AyU_sgMKg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
